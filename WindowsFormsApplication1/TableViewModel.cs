@@ -8,12 +8,14 @@ using System.Threading.Tasks;
 
 namespace WindowsFormsApplication1
 {
-    interface TableViewModel
+    public interface TableViewModel
     {
         void updateView();
         void updateModel();
         void changeTable(string tableName);
+        string getTableName();
         List<string> getTableNames();
+        List<string[]> getForeignKeys();
         DataColumn[] getPrimaryKeys();
         DataColumnCollection getColumns();
     }
@@ -63,9 +65,19 @@ namespace WindowsFormsApplication1
             return overviewModel.getTableNames();
         }
 
+        public string getTableName()
+        {
+            return model.getTableName();
+        }
+
         public DataColumn[] getPrimaryKeys()
         {
             return model.getPrimaryKeys();
+        }
+
+        public List<string[]> getForeignKeys()
+        {
+            return model.getForeignKeys();
         }
 
         public DataColumnCollection getColumns()

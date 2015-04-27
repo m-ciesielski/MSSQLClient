@@ -17,7 +17,8 @@ namespace WindowsFormsApplication1
         private DefaultTableViewModel viewModel;
         private SqlConnection connection;
         private int lastIndex = -1;
-
+        private DataGridViewButtonColumn deleteColumn;
+        private DataGridViewButtonColumn updateColumn;
         public MainForm(SqlConnection connection)
         {
             if(connection==null)
@@ -27,11 +28,28 @@ namespace WindowsFormsApplication1
             viewModel = new DefaultTableViewModel(this ,connection);
             InitializeComponent();
             updateTableNames(viewModel.getTableNames());
+
+
+            deleteColumn = new DataGridViewButtonColumn();
+            deleteColumn.HeaderText = "Usuwanie";
+            deleteColumn.Text = "Usuń";
+            deleteColumn.Name = "deleteColumn";
+            deleteColumn.UseColumnTextForButtonValue = true;
+            dataGridView1.Columns.Add(deleteColumn);
+
+            updateColumn = new DataGridViewButtonColumn();
+            updateColumn.HeaderText = "Edycja";
+            updateColumn.Text = "Edytuj";
+            updateColumn.Name = "updateColumn";
+            updateColumn.UseColumnTextForButtonValue = true;
+            dataGridView1.Columns.Add(updateColumn);
+            
         }
 
         public void update(DataTable table)
         {
             dataGridView1.DataSource = table;
+            
         }
 
         //TODO:clear list?
@@ -87,10 +105,15 @@ namespace WindowsFormsApplication1
         {
             if(listBox1.SelectedIndex!=-1)
             {
-                InsertForm insertForm = new InsertForm(viewModel.getColumns(), viewModel.getPrimaryKeys());
+                InsertForm insertForm = new InsertForm(viewModel);
                 insertForm.Show();
             }
             
+        }
+
+        private void toolStripStatusLabel1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

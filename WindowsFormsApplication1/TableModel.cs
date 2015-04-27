@@ -14,7 +14,9 @@ namespace WindowsFormsApplication1
         void changeTable(string tableName);
         void update();
         DataColumn[] getPrimaryKeys();
+        List<string[]> getForeignKeys();
         DataColumnCollection getColumns();
+        string getTableName();
     }
 
     class DefaultTableModel : TableModel
@@ -26,8 +28,8 @@ namespace WindowsFormsApplication1
         private DataSet data = new DataSet();
         private SqlDataAdapter dataAdapter;
         private DataTable table;
-        
-        
+        private DataTable schema;
+        private List<string[]> foreignKeys;
         public DefaultTableModel(SqlConnection connection)
         {
             if (connection == null)
@@ -42,6 +44,7 @@ namespace WindowsFormsApplication1
             this.connection = connection;
             this.tableName = tableName;
             fetchTableData();
+            fetchForeignKeys();
         }
 
         public DataTable getData()
@@ -59,6 +62,7 @@ namespace WindowsFormsApplication1
             this.tableName = tableName;
             Console.WriteLine(tableName);
             fetchTableData();
+            fetchForeignKeys();
         }
 
         public void update()
@@ -69,12 +73,59 @@ namespace WindowsFormsApplication1
 
         public DataColumn[] getPrimaryKeys()
         {
-            return table.PrimaryKey;
+            return schema.PrimaryKey;
+        }
+
+        public List<string[]> getForeignKeys()
+        {
+            return foreignKeys;
+        }
+
+
+        /**
+         * Pobiera listę kluczy obcych. Pierwszy  element klucza to nazwa tablicy do której odnosi się klucz obcy, 
+         * Drugi element to indeks kolumny klucza obcego.
+         * */
+        private void fetchForeignKeys()
+        {
+
+
+            string command = "SELECT object_name(f.parent_object_id) ParentTableName," +
+                             " object_name(f.referenced_object_id) RefTableName, " +
+                             "c.parent_column_id " +
+                             "FROM sys.foreign_keys f JOIN sys.foreign_key_columns c " +
+                             "on f.object_id=c.constraint_object_id " +
+                             "WHERE f.parent_object_id = object_id('" + tableName + "');";
+            cmd = new SqlCommand(command, connection);
+
+            foreignKeys = new List<string[]>();
+            try
+            {
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    string[] foreignKey={reader.GetString(1), reader.GetInt32(2).ToString()};
+                    foreignKeys.Add(foreignKey);
+                }
+                    
+
+                reader.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("{0}", e.StackTrace.ToString());
+            }
         }
 
         public DataColumnCollection getColumns()
         {
             return table.Columns;
+        }
+
+        public string getTableName()
+        {
+            return tableName;
         }
 
         private void fetchTableData()
@@ -84,10 +135,17 @@ namespace WindowsFormsApplication1
 
             try
             {
-                dataAdapter = new SqlDataAdapter(command, connection);
-                table = new DataTable();
-                if(table!=null)
-                dataAdapter.Fill(table);
+               using (dataAdapter = new SqlDataAdapter(command, connection))
+                {
+                    table = new DataTable();
+                    if(table!=null)
+                    dataAdapter.Fill(table);
+                    schema = new DataTable();
+                    dataAdapter.FillSchema(schema, SchemaType.Mapped);
+                }
+                
+                
+
             }
             catch (SqlException e)
             {
