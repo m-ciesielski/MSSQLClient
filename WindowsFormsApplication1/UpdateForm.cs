@@ -7,53 +7,60 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.SqlClient;
 using System.Globalization;
-//using System.Data;
-
 namespace WindowsFormsApplication1
 {
-    public partial class InsertForm : Form
+    public partial class UpdateForm : Form
     {
+
         private DataColumnCollection columns;
         private DataColumn[] primaryKeys;
         private DataColumn identityColumn;
         private List<string[]> foreignKeys;
-        private MainController viewModel;
-        //TODO: join text/combo lists
+        private MainController controller;
+
         private List<Control> inputFields;
         private List<List<int>> foreignKeysIds;
 
-        public InsertForm(MainController viewModel)
+        private int index;
+
+
+        public UpdateForm(MainController controller, int index)
         {
-            if (viewModel == null)
+            if (controller == null)
                 throw new ArgumentNullException();
-            this.viewModel = viewModel;
-            this.columns = viewModel.getColumns();
-            this.primaryKeys = viewModel.getPrimaryKeys();
-            this.foreignKeys = viewModel.getForeignKeys();
-            this.identityColumn = viewModel.getIdentityColumn();
+            this.controller = controller;
+            this.columns = controller.getColumns();
+            this.primaryKeys = controller.getPrimaryKeys();
+            this.foreignKeys = controller.getForeignKeys();
+            this.identityColumn = controller.getIdentityColumn();
+            this.index = index;
             InitializeComponent();
             initialize();
         }
 
 
-        //TODO:get values ordered by columns
         protected List<object> getInsertedValues()
         {
             List<Object> values = new List<object>();
-            int j = 0;
-            for (int i = 0; i < inputFields.Count; ++i)
+           // int j = 0;
+           // foreign key counter
+            int k = 0;
+            for (int i = 0, j=0; i < inputFields.Count; ++i, ++j)
             {
+                if (Program.connectedMode && columns[i].ColumnName == identityColumn.ColumnName)
+                    ++j;
+
+                    
                 if(inputFields[i].GetType()==typeof(TextBox))
                 {
-                    if(columns[i].DataType == typeof(string))
+                    if(columns[j].DataType == typeof(string))
                     values.Add(inputFields[i].Text);
-                    else if (columns[i].DataType == typeof(int))
+                    else if (columns[j].DataType == typeof(int))
                         values.Add(Convert.ToInt32(inputFields[i].Text));
-                    else if (columns[i].DataType == typeof(double))
+                    else if (columns[j].DataType == typeof(double))
                         values.Add(Convert.ToDouble(inputFields[i].Text));
-                    else if (columns[i].DataType == typeof(bool))
+                    else if (columns[j].DataType == typeof(bool))
                         values.Add(Convert.ToBoolean(inputFields[i].Text));
                     else if (columns[j].DataType == typeof(DateTime))
                         values.Add(DateTime.ParseExact(inputFields[i].Text, "dd-MM-yyyy", CultureInfo.InvariantCulture));
@@ -61,8 +68,8 @@ namespace WindowsFormsApplication1
                 else if (inputFields[i].GetType() == typeof(ComboBox))
                 {
                     ComboBox combo = (ComboBox)inputFields[i];
-                    values.Add(foreignKeysIds[j][combo.SelectedIndex]);
-                    ++j;
+                    values.Add(foreignKeysIds[k][combo.SelectedIndex]);
+                    ++k;
                 }
             }
                 
@@ -75,7 +82,7 @@ namespace WindowsFormsApplication1
 
         protected void initialize()
         {
-           // panel1 = new Panel();
+
             inputFields = new List<Control>();
 
             panel1.BackColor = Color.Azure;
@@ -83,18 +90,17 @@ namespace WindowsFormsApplication1
             panel1.Dock = DockStyle.Top;
             panel1.Size = new Size(400, 50 * columns.Count);
 
-           // insertButton = new Button();
-            insertButton.Location = new System.Drawing.Point(50, panel1.Size.Height+50);
-            //insertButton.Anchor = AnchorStyles.Right;
-            insertButton.Text = "Dodaj rekord";
-           // this.Controls.Add(panel1);
-           // this.Controls.Add(insertButton);
+ 
+            updateButton.Location = new System.Drawing.Point(50, panel1.Size.Height+50);
+          //  updateButton.Anchor = AnchorStyles.Right;
+            updateButton.Text = "Modyfikuj";
+
             List<DataTable> refTables=null;
             bool comboAdded = false;
 
             if(foreignKeys.Count>0)
             {
-                refTables = viewModel.getReferencedTablesData();
+                refTables = controller.getReferencedTablesData();
                 foreignKeysIds = new List<List<int>>();
             }
 
@@ -122,9 +128,11 @@ namespace WindowsFormsApplication1
 
                             combo.Items.Add(strBuilder.ToString());
                         }
-                            
       
                             combo.Location = new System.Drawing.Point(comboLabel.Width + 25, 10 + 50 * i);
+
+                            combo.SelectedIndex = (int)controller.getValues(index)[i]-1;
+                            
                             panel1.Controls.Add(combo);
                             inputFields.Add(combo);
                             panel1.Controls.Add(comboLabel);
@@ -146,8 +154,8 @@ namespace WindowsFormsApplication1
                 label.Location = new System.Drawing.Point(0, 10 + 50 * i);
 
                 TextBox textBox = new TextBox();
-                if (columns[i].DataType == typeof(int))
-                    textBox.Validating += validateIntegerTextBox;
+                if(columns[i].DataType == typeof(int))
+                    textBox.Validating+=validateIntegerTextBox;
 
                 else if (columns[i].DataType == typeof(double) ||
                     columns[i].DataType == typeof(float))
@@ -170,6 +178,8 @@ namespace WindowsFormsApplication1
 
                 textBox.Location = new System.Drawing.Point(label.Width + 25, 10 + 50 * i);
 
+                textBox.Text = controller.getValues(index)[i].ToString();
+
                 panel1.Controls.Add(label);
                 panel1.Controls.Add(textBox);
                 inputFields.Add(textBox);
@@ -179,26 +189,16 @@ namespace WindowsFormsApplication1
 
              
         }
-        //TODO: delete auto increment/check for auto inc
-        //TODO: command creation to model region?
-        private void insertButton_Click(object sender, EventArgs e)
-        {
-            if(Program.connectedMode==true)
-            {
-                Command insertCommand = new Command(Command.MainStatement.INSERT,
-                    viewModel.getTableName(), viewModel.getColumnsWithoutIdentity(),
-                    getInsertedValues());
 
-                viewModel.execute(insertCommand.getCommandString());
-                viewModel.updateAll();
+        private void updateButton_Click(object sender, EventArgs e)
+        {
+                controller.update(index, getInsertedValues());
+                if (Program.connectedMode)
+                    controller.updateAll();
+                else
+                    controller.updateView();
 
                 this.Hide();
-            }
-            
-            else
-            {
-                viewModel.insert(getInsertedValues());
-            }
         }
 
         protected void validateDecimalTextBox(object sender, CancelEventArgs e)
@@ -211,7 +211,7 @@ namespace WindowsFormsApplication1
                     e.Cancel = true;
 
             if(e.Cancel==true)
-                MessageBox.Show("Niepoprawna wartość: " + textBox.Text);
+                    MessageBox.Show("Niepoprawna wartość: "+ textBox.Text);
                     
         }
 
@@ -234,7 +234,7 @@ namespace WindowsFormsApplication1
 
             if (textBox.Text != "true" && textBox.Text != "false" &&
                 textBox.Text != "True" && textBox.Text != "False" &&
-                textBox.Text != "1" && textBox.Text != "0")
+                textBox.Text!="1" && textBox.Text!="0")
                 e.Cancel = true;
 
             if (e.Cancel == true)
@@ -243,7 +243,6 @@ namespace WindowsFormsApplication1
 
         protected void validateDateTextBox(object sender, CancelEventArgs e)
         {
-
             TextBox textBox = (TextBox)sender;
 
             if (DateTime.ParseExact(textBox.Text, "dd-MM-yyyy", CultureInfo.InvariantCulture) == null)
@@ -252,6 +251,6 @@ namespace WindowsFormsApplication1
             if (e.Cancel == true)
                 MessageBox.Show("Niepoprawna wartość: " + textBox.Text);
         }
-
+    
     }
 }

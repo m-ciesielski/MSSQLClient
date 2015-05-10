@@ -37,6 +37,8 @@
             this.userLabel = new System.Windows.Forms.Label();
             this.catalogTextBox = new System.Windows.Forms.TextBox();
             this.catalogLabel = new System.Windows.Forms.Label();
+            this.connectedModeButton = new System.Windows.Forms.RadioButton();
+            this.unconnectedModeButton = new System.Windows.Forms.RadioButton();
             this.SuspendLayout();
             // 
             // serverTextBox
@@ -120,11 +122,37 @@
             this.catalogLabel.TabIndex = 8;
             this.catalogLabel.Text = "Katalog";
             // 
+            // connectedModeButton
+            // 
+            this.connectedModeButton.AutoSize = true;
+            this.connectedModeButton.Location = new System.Drawing.Point(23, 12);
+            this.connectedModeButton.Name = "connectedModeButton";
+            this.connectedModeButton.Size = new System.Drawing.Size(115, 17);
+            this.connectedModeButton.TabIndex = 9;
+            this.connectedModeButton.Text = "Tryb połączeniowy";
+            this.connectedModeButton.UseVisualStyleBackColor = true;
+            this.connectedModeButton.CheckedChanged += new System.EventHandler(this.connectedModeButton_CheckedChanged);
+            // 
+            // unconnectedModeButton
+            // 
+            this.unconnectedModeButton.AutoSize = true;
+            this.unconnectedModeButton.Checked = true;
+            this.unconnectedModeButton.Location = new System.Drawing.Point(171, 12);
+            this.unconnectedModeButton.Name = "unconnectedModeButton";
+            this.unconnectedModeButton.Size = new System.Drawing.Size(132, 17);
+            this.unconnectedModeButton.TabIndex = 10;
+            this.unconnectedModeButton.TabStop = true;
+            this.unconnectedModeButton.Text = "Tryb bezpołączeniowy";
+            this.unconnectedModeButton.UseVisualStyleBackColor = true;
+            this.unconnectedModeButton.CheckedChanged += new System.EventHandler(this.unconnectedModeButton_CheckedChanged);
+            // 
             // ConnectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 326);
+            this.ClientSize = new System.Drawing.Size(311, 326);
+            this.Controls.Add(this.unconnectedModeButton);
+            this.Controls.Add(this.connectedModeButton);
             this.Controls.Add(this.catalogLabel);
             this.Controls.Add(this.catalogTextBox);
             this.Controls.Add(this.userLabel);
@@ -152,5 +180,7 @@
         private System.Windows.Forms.Label userLabel;
         private System.Windows.Forms.TextBox catalogTextBox;
         private System.Windows.Forms.Label catalogLabel;
+        private System.Windows.Forms.RadioButton connectedModeButton;
+        private System.Windows.Forms.RadioButton unconnectedModeButton;
     }
 }

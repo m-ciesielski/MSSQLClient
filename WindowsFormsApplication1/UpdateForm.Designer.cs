@@ -1,6 +1,6 @@
 ﻿namespace WindowsFormsApplication1
 {
-    partial class InsertForm
+    partial class UpdateForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,37 +29,36 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.insertButton = new System.Windows.Forms.Button();
+            this.updateButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // panel1
             // 
-            this.panel1.Location = new System.Drawing.Point(29, 36);
+            this.panel1.Location = new System.Drawing.Point(31, 13);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(210, 160);
+            this.panel1.Size = new System.Drawing.Size(226, 177);
             this.panel1.TabIndex = 0;
             // 
-            // insertButton
+            // updateButton
             // 
-            this.insertButton.Location = new System.Drawing.Point(151, 222);
-            this.insertButton.Name = "insertButton";
-            this.insertButton.Size = new System.Drawing.Size(96, 31);
-            this.insertButton.TabIndex = 2;
-            this.insertButton.Text = "button2";
-            this.insertButton.UseVisualStyleBackColor = true;
-            this.insertButton.Click += new System.EventHandler(this.insertButton_Click);
+            this.updateButton.Location = new System.Drawing.Point(90, 205);
+            this.updateButton.Name = "updateButton";
+            this.updateButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.updateButton.Size = new System.Drawing.Size(104, 38);
+            this.updateButton.TabIndex = 1;
+            this.updateButton.Text = "Modyfikuj";
+            this.updateButton.UseVisualStyleBackColor = true;
+            this.updateButton.Click += new System.EventHandler(this.updateButton_Click);
             // 
-            // InsertForm
+            // UpdateForm
             // 
-            this.AcceptButton = this.insertButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(284, 262);
-            this.Controls.Add(this.insertButton);
+            this.Controls.Add(this.updateButton);
             this.Controls.Add(this.panel1);
-            this.Name = "InsertForm";
-            this.Text = "InsertForm";
+            this.Name = "UpdateForm";
+            this.Text = "UpdateForm";
             this.ResumeLayout(false);
 
         }
@@ -67,6 +66,6 @@
         #endregion
 
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button insertButton;
+        private System.Windows.Forms.Button updateButton;
     }
 }

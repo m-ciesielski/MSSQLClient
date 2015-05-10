@@ -14,7 +14,7 @@ namespace WindowsFormsApplication1
  * Class Command creates SQL Insert, Update and Delete statements
  * as strings ready to execute by Statement.execute() method. 
  *
- * TODO: constructors unification
+ * TODO: constructors unification/factory
  */
     public enum MainStatement{UPDATE, INSERT, DELETE};
 	protected String tableName;
@@ -101,7 +101,9 @@ namespace WindowsFormsApplication1
     }
 	
 	//UPDATE
-	public Command(MainStatement mainStat, String tableName, List<String> columns,
+        //columns = PK columns
+        //condition = PK values
+    public Command(MainStatement mainStat, String tableName, DataColumn[] columns,
 			int [] condition, Object value, String updateColumn) {
 		if(tableName==null || columns==null || condition==null || value==null || updateColumn==null)
 			throw new ArgumentException("None of Command constructor arguments can be null.");
@@ -110,9 +112,11 @@ namespace WindowsFormsApplication1
 			throw new ArgumentException("Condition primary keys must be provided.");
 		this.mainStat=mainStat;
 		this.tableName=tableName;
-		this.columns=columns;
+        this.columns = new List<string>();
+        for (int i = 0; i < columns.Length; ++i)
+            this.columns.Add(columns[i].ColumnName);
 		this.updateColumn=updateColumn;
-		if(columns.Count==1)
+		if(columns.Length==1)
 			this.condition=singularKeyConditionToString(condition);
 		else
 			this.condition=compositeKeyConditionToString(condition);
@@ -120,6 +124,16 @@ namespace WindowsFormsApplication1
 		this.values.Add(value);
 	}
 	
+
+    public static List<string> PrimaryKeyColumnsToStringList(DataColumn[] pkColumns)
+    {
+        List<string> pkColumnsNames = new List<string>();
+
+        for (int i = 0; i < pkColumns.Length; ++i)
+            pkColumnsNames.Add(pkColumns[i].ColumnName);
+
+        return pkColumnsNames;
+    }
 	
 
 	/**
@@ -188,7 +202,7 @@ namespace WindowsFormsApplication1
 		buff=new StringBuilder();
 		for(int i=0;i<values.Count;++i)
 		{
-			if(values[i].GetType()==typeof(Boolean))
+            if (values[i].GetType() == typeof(bool) || values[i].GetType() == typeof(Boolean))
 			{
 				if((Boolean)values[i]==true)
 					buff.Append(1+", ");
@@ -196,7 +210,7 @@ namespace WindowsFormsApplication1
 					buff.Append(0+", ");
 			}
 			else if(values[i].GetType()==typeof(string))
-				buff.Append("\""+values[i]+"\""+", ");
+				buff.Append("\'"+values[i]+"\'"+", ");
 			else
 			buff.Append(values[i]+", ");
 		}
@@ -223,7 +237,7 @@ namespace WindowsFormsApplication1
         }
     }
 
-	public String createCommandString(){
+	public String getCommandString(){
 		String CommandString = null;
 		switch(mainStat){
 			case MainStatement.DELETE:

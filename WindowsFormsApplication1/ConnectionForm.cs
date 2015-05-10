@@ -54,11 +54,25 @@ namespace WindowsFormsApplication1
                 string connString = "Data Source=" + serverTextBox.Text + "; Initial Catalog=" + catalogTextBox.Text + ";User=" + userTextBox.Text + ";Password=" + passwordTextBox.Text;
                 SqlConnection connection = new SqlConnection(connString);
                 openConnection(connection);
-                MainForm mainForm = new MainForm(connection);
-                this.Hide();
-                mainForm.Show();
+                if(connection!=null && connection.State == ConnectionState.Open)
+                {
+                    MainForm mainForm = new MainForm(connection);
+                    this.Hide();
+                    mainForm.Show();
+                }
+                
             }
              
+        }
+
+        private void connectedModeButton_CheckedChanged(object sender, EventArgs e)
+        {
+            Program.connectedMode = true;
+        }
+
+        private void unconnectedModeButton_CheckedChanged(object sender, EventArgs e)
+        {
+            Program.connectedMode = false;
         }
     }
 }
