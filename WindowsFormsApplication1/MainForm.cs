@@ -14,7 +14,7 @@ namespace WindowsFormsApplication1
     public partial class MainForm : Form
     {
         //private SqlConnection conn;
-        private DefaultMainController viewModel;
+        private DefaultMainController controller;
         private SqlConnection connection;
         private int lastIndex = -1;
         //private DataGridViewButtonColumn deleteColumn;
@@ -27,7 +27,7 @@ namespace WindowsFormsApplication1
                 throw new ArgumentNullException();
             this.connection=connection;
 
-            viewModel = new DefaultMainController(this ,connection);
+            controller = new DefaultMainController(this ,connection);
             InitializeComponent();
 
             if(Program.connectedMode)
@@ -35,7 +35,7 @@ namespace WindowsFormsApplication1
             else
                 toolStripStatusLabel1.Text = "Tryb bezpołączeniowy";
 
-            updateTableNames(viewModel.getTableNames());
+            updateTableNames(controller.getTableNames());
 
             if (!Program.connectedMode)
                 loadTables();
@@ -63,6 +63,15 @@ namespace WindowsFormsApplication1
         {
             dataGridView1.DataSource = table;
             dataGridView1.Update();
+            //dataGridView1.DataBind();
+
+            filterColumnComboBox.Items.Clear();
+            filterColumnComboBox.SelectedItem = null;
+            filterColumnComboBox.Update();
+            for (int i = 0; i < dataGridView1.ColumnCount; ++i)
+                if (dataGridView1.Columns[i].Name!="updateColumn" &&
+                    dataGridView1.Columns[i].ValueType==typeof(string))
+                    filterColumnComboBox.Items.Add(dataGridView1.Columns[i].Name);
             
         }
 
@@ -71,7 +80,7 @@ namespace WindowsFormsApplication1
         {
             tables = new List<DataTable>();
             schemas = new List<DataTable>();
-            List<string> tableNames= viewModel.getTableNames();
+            List<string> tableNames= controller.getTableNames();
             for (int i = 0; i < tableNames.Count; ++i)
             {
                 TableModel model = new DefaultTableModel(connection, tableNames[i]);
@@ -118,12 +127,12 @@ namespace WindowsFormsApplication1
             List<int> indices = new List<int>();
 
             for (int i = 0; i < dataGridView1.SelectedRows.Count; ++i)
-                if (dataGridView1.SelectedRows[i].Index < dataGridView1.RowCount - 1)
+                if (dataGridView1.SelectedRows[i].Index < dataGridView1.RowCount)
                     indices.Add(dataGridView1.SelectedRows[i].Index);
 
             if(indices.Count==0)
                 for (int i = 0; i < dataGridView1.SelectedCells.Count; ++i)
-                    if(dataGridView1.SelectedCells[i].RowIndex<dataGridView1.RowCount-1)
+                    if(dataGridView1.SelectedCells[i].RowIndex<dataGridView1.RowCount)
                         indices.Add(dataGridView1.SelectedCells[i].RowIndex);
 
                 return indices;
@@ -131,7 +140,7 @@ namespace WindowsFormsApplication1
 
         private void button1_Click(object sender, EventArgs e)
         {
-            viewModel.changeTable(listBox1.GetItemText(listBox1.SelectedItem));
+            controller.changeTable(listBox1.GetItemText(listBox1.SelectedItem));
         }
 
 
@@ -165,7 +174,7 @@ namespace WindowsFormsApplication1
             if(lastIndex!=listBox1.SelectedIndex)
             {
                 lastIndex = listBox1.SelectedIndex;
-                viewModel.changeTable(listBox1.GetItemText(listBox1.SelectedItem));
+                controller.changeTable(listBox1.GetItemText(listBox1.SelectedItem));
             }
         }
 
@@ -173,7 +182,7 @@ namespace WindowsFormsApplication1
         {
             if(listBox1.SelectedIndex!=-1)
             {
-                InsertForm insertForm = new InsertForm(viewModel);
+                InsertForm insertForm = new InsertForm(controller);
                 insertForm.Show();
             }
             
@@ -192,7 +201,7 @@ namespace WindowsFormsApplication1
                    "Potwierdzenie usunięcia", MessageBoxButtons.OKCancel);
                 if(deleteDialog==DialogResult.OK)
                 {
-                    viewModel.delete(getSelectedIndices());
+                    controller.delete(getSelectedIndices());
                 }
 
             }
@@ -236,7 +245,7 @@ namespace WindowsFormsApplication1
 
         private void syncButton_Click(object sender, EventArgs e)
         {
-            viewModel.sync();
+            controller.sync();
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -246,16 +255,32 @@ namespace WindowsFormsApplication1
             if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
                 e.RowIndex >= 0)
             {
-                UpdateForm updateForm = new UpdateForm(viewModel, e.RowIndex);
+                UpdateForm updateForm = new UpdateForm(controller, e.RowIndex);
                 updateForm.Show();
             }
 
             else if(senderGrid.Columns[e.ColumnIndex].CellType==typeof(DataGridViewImageCell))
             {
-                ImageForm imageForm = new ImageForm(viewModel, senderGrid.Columns[e.ColumnIndex].Name, e.RowIndex);
+                ImageForm imageForm = new ImageForm(controller, senderGrid.Columns[e.ColumnIndex].Name, e.RowIndex);
                 imageForm.Show();
             }
         }
+
+        private void filterButton_Click(object sender, EventArgs e)
+        {
+            if(filterTextBox.Text!="")
+            {
+                string rowFilter = string.Format("[{0}] LIKE '%{1}%'", filterColumnComboBox.SelectedItem, filterTextBox.Text);
+                (dataGridView1.DataSource as DataTable).DefaultView.RowFilter = rowFilter;
+            }
+            else
+            {
+                (dataGridView1.DataSource as DataTable).DefaultView.RowFilter = null;
+            }
+            
+        }
+
+
 
 
     }

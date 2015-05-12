@@ -81,7 +81,7 @@ namespace WindowsFormsApplication1
             }
             catch (SqlException e)
             {
-                MessageBox.Show("Synchronizacja nie powiodła się.\n"+e.Errors.ToString());
+                MessageBox.Show("Synchronizacja nie powiodła się.\n");
                
             }
             
@@ -445,6 +445,7 @@ namespace WindowsFormsApplication1
                 referencedTableNames.Add(foreignKeys[i][0]);
             return referencedTableNames;
         }
+
     }
 
     interface ExtendedTableModel : TableModel
@@ -503,7 +504,6 @@ namespace WindowsFormsApplication1
             this.referencedTableNames = base.GetReferencedTableNames();
             fetchReferencedTablesData();
         }
-
 
 
     }

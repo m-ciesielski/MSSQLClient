@@ -85,7 +85,7 @@ namespace WindowsFormsApplication1
 
             inputFields = new List<Control>();
 
-            panel1.BackColor = Color.Azure;
+           // panel1.BackColor = Color.Azure;
             panel1.Location = new System.Drawing.Point(50, 50);
             panel1.Dock = DockStyle.Top;
             panel1.Size = new Size(400, 50 * columns.Count);

@@ -39,14 +39,17 @@
             this.połaczeniowyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bezpołaczeniowyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.panel3 = new System.Windows.Forms.Panel();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.filterTextBox = new System.Windows.Forms.TextBox();
+            this.filterButton = new System.Windows.Forms.Button();
+            this.filterColumnComboBox = new System.Windows.Forms.ComboBox();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
-            this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -68,7 +71,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(406, -1);
+            this.button2.Location = new System.Drawing.Point(503, 0);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(126, 23);
             this.button2.TabIndex = 5;
@@ -88,7 +91,7 @@
             // 
             // deleteButton
             // 
-            this.deleteButton.Location = new System.Drawing.Point(538, -1);
+            this.deleteButton.Location = new System.Drawing.Point(635, 0);
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.Size = new System.Drawing.Size(148, 23);
             this.deleteButton.TabIndex = 7;
@@ -98,6 +101,9 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.filterColumnComboBox);
+            this.panel1.Controls.Add(this.filterButton);
+            this.panel1.Controls.Add(this.filterTextBox);
             this.panel1.Controls.Add(this.syncButton);
             this.panel1.Controls.Add(this.deleteButton);
             this.panel1.Controls.Add(this.button2);
@@ -110,7 +116,7 @@
             // 
             // syncButton
             // 
-            this.syncButton.Location = new System.Drawing.Point(128, -1);
+            this.syncButton.Location = new System.Drawing.Point(82, 0);
             this.syncButton.Name = "syncButton";
             this.syncButton.Size = new System.Drawing.Size(75, 23);
             this.syncButton.TabIndex = 9;
@@ -162,16 +168,6 @@
             this.panel2.Size = new System.Drawing.Size(786, 387);
             this.panel2.TabIndex = 9;
             // 
-            // panel3
-            // 
-            this.panel3.AutoSize = true;
-            this.panel3.Controls.Add(this.listBox1);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel3.Location = new System.Drawing.Point(0, 25);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(121, 340);
-            this.panel3.TabIndex = 10;
-            // 
             // dataGridView1
             // 
             this.dataGridView1.AllowUserToAddRows = false;
@@ -189,6 +185,41 @@
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView1.Size = new System.Drawing.Size(613, 333);
             this.dataGridView1.TabIndex = 5;
+            // 
+            // panel3
+            // 
+            this.panel3.AutoSize = true;
+            this.panel3.Controls.Add(this.listBox1);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel3.Location = new System.Drawing.Point(0, 25);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(121, 340);
+            this.panel3.TabIndex = 10;
+            // 
+            // filterTextBox
+            // 
+            this.filterTextBox.Location = new System.Drawing.Point(291, 1);
+            this.filterTextBox.Name = "filterTextBox";
+            this.filterTextBox.Size = new System.Drawing.Size(114, 20);
+            this.filterTextBox.TabIndex = 10;
+            // 
+            // filterButton
+            // 
+            this.filterButton.Location = new System.Drawing.Point(411, -1);
+            this.filterButton.Name = "filterButton";
+            this.filterButton.Size = new System.Drawing.Size(51, 23);
+            this.filterButton.TabIndex = 11;
+            this.filterButton.Text = "Filtruj";
+            this.filterButton.UseVisualStyleBackColor = true;
+            this.filterButton.Click += new System.EventHandler(this.filterButton_Click);
+            // 
+            // filterColumnComboBox
+            // 
+            this.filterColumnComboBox.FormattingEnabled = true;
+            this.filterColumnComboBox.Location = new System.Drawing.Point(163, 1);
+            this.filterColumnComboBox.Name = "filterColumnComboBox";
+            this.filterColumnComboBox.Size = new System.Drawing.Size(122, 21);
+            this.filterColumnComboBox.TabIndex = 12;
             // 
             // MainForm
             // 
@@ -211,8 +242,8 @@
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.panel2.ResumeLayout(false);
-            this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.panel3.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -234,6 +265,9 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.Button filterButton;
+        private System.Windows.Forms.TextBox filterTextBox;
+        private System.Windows.Forms.ComboBox filterColumnComboBox;
     }
 }
 
